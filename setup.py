@@ -1,5 +1,6 @@
+from __future__ import absolute_import
 from setuptools import setup
-from __init__ import __version__
+from .__init__ import __version__
 
 
 setup(name='geocode',

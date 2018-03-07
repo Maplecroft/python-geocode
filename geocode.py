@@ -1,8 +1,11 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import os
-import urllib
-import cPickle as pickle
+import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
+import six.moves.cPickle as pickle
 import json
 import time
+from six.moves import input
 
 
 class NoResultError(Exception): pass
@@ -42,8 +45,7 @@ def latlon(location, throttle=0.5, center=True, round_digits=2):
     global last_read
 
     if isinstance(location, list):
-        return map(lambda x: latlon(x, throttle=throttle, center=center, round_digits=round_digits),
-                   location)
+        return [latlon(x, throttle=throttle, center=center, round_digits=round_digits) for x in location]
 
     if location in _latlons:
         result = _latlons[location]
@@ -58,7 +60,7 @@ def latlon(location, throttle=0.5, center=True, round_digits=2):
 
     try:
         url = "http://maps.google.com/maps/api/geocode/json?address=%s&sensor=false" % location.replace(' ', '+')
-        data = json.loads(urllib.urlopen(url).read())
+        data = json.loads(six.moves.urllib.request.urlopen(url).read())
         if data['status'] == 'OVER_QUERY_LIMIT':
             raise QueryLimitError('Google Maps API query limit exceeded. (Use the throttle keyword to control the request rate.')
             
@@ -94,6 +96,6 @@ if __name__ == '__main__':
 
     while input:
         try:
-            input = raw_input('Enter the name of a location: ')
-            if input: print latlon(input)
+            input = input('Enter the name of a location: ')
+            if input: print(latlon(input))
         except EOFError: break
